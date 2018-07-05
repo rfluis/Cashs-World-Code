@@ -1,0 +1,30 @@
+#!/usr/bin/bash
+
+WORLD_NAME="cashs_world"
+
+WORLD_DIR=/mnt/sdc6-Data_Part/SYSTEM/Fedora25/MINETEST/WORLDS/$WORLD_NAME
+EXE_DIR=/mnt/sdc6-Data_Part/SYSTEM/Fedora25/MINETEST/minetest-stable-0.4.16-9_June_2017/bin
+CONFIG_FILE=$WORLD_DIR/$WORLD_NAME.conf
+LOG_FILE=$WORLD_DIR/$WORLD_NAME-log.txt
+
+# Not used yet
+MAP_BACKEND="REDIS"
+#PLAYER_BACKEND="REDIS"
+
+if [ MAP_BACKEND = "REDIS" ]; then
+REDIS_CONF=$WORLD_DIR/redis.conf
+fi
+
+while true
+    do
+    $EXE_DIR/minetestserver --config $CONFIG_FILE --logfile $LOG_FILE --world $WORLD_DIR
+
+    echo "****************************************"
+    echo "********** SERVER SHUT DOWN ! **********"
+    echo "AUTO-RESTARTING IN 10 SECONDS !"
+    echo "****************************************"
+
+# This would be a good time to backup the log file if it is to be deleted
+
+    sleep 10
+done
