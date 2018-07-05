@@ -20,6 +20,8 @@ I think that my usage of the large number of aliases is seriously slowing the se
 
 Anyone is welcome to use this code. It comes AS IS! I doubt if I will make changes to it. But 'just in case' I do, I'm posting it to github. You can clone this repository, make changes to your copy, clean it up, modify it, etc. Hopefully make it better. Or tell me that what I was trying to do won't work and tell me why it won't.
 
+I am sure changes need to be made so that this code will work with newer versions of Minetest. Modifications to use databases for some functions might be a great idea.
+
 I'm hoping RND takes a crack at this. I bet he'd do a great job.
 
 Have fun playing Minetest folks :)
