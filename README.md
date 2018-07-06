@@ -22,6 +22,4 @@ Anyone is welcome to use this code. It comes AS IS! I doubt if I will make chang
 
 I am sure changes need to be made so that this code will work with newer versions of Minetest. Modifications to use databases for some functions might be a great idea.
 
-I'm hoping RND takes a crack at this. I bet he'd do a great job.
-
 Have fun playing Minetest folks :)
