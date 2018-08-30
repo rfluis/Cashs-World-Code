@@ -1,4 +1,0 @@
-name = "Mammu",
-author = "hansuke123",
-description = "",
-comment = "CC BY-SA 3.0",
