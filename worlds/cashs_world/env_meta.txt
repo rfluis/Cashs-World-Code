@@ -1,0 +1,7 @@
+day_count = 29321
+lbm_introduction_times = :custom:start_nodetimer_cotton~21314617;custom:gen2~21394143;:custom:replace_custom_door_glass~21605781;:custom:replace_custom_door_obsidian_glass~21605781;:custom:replace_custom_door_steel~21605781;:custom:replace_custom_door_wood~21605781;custom:3dtorch~24859393;custom:convert_saplings_to_node_timer~24859393;
+game_time = 39809724
+time_of_day = 18971
+lbm_introduction_times_version = 1
+last_clear_objects_time = 39746417
+EnvArgsEnd

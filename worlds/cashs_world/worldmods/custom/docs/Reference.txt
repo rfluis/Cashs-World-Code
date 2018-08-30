@@ -1,0 +1,456 @@
+Every node, craftitem, tool, mob, chat command in a world is defined
+by the use of definition files.
+
+These definition files are to contain definition information specific to an item in the world.
+The registration_library.lua file uses this information to register the item
+
+Any unneeded fields can be left blank or deleted
+
+When saving definition files, ensure that the file name ends with one of the following file endings:
+'_craftitem.lua'
+'_node.lua'
+'_tool.lua'
+'_mob.lua'
+'_none.lua' will this ever be used? Define and reserve the file ending for now just in case
+That will allow the 'item scanner' to find the item.
+The different endings will allow easier searching by the admin
+
+Ref: builtin/game/register.lua
+     http://c55.me/minetest2/wiki/doku.php?id=changes:itemdef:modders - Slightly out-dated. Not everything is correct
+     https://github.com/minetest/minetest/blob/master/doc/lua_api.txt
+     node.h
+     src/itemdef.cpp
+     http://rubenwardy.com/minetest_modding_book/
+     http://dev.minetest.net/Main_Page
+
+
+
+
+Definable parameters:
+
+Item_Type
+Can be one of:
+craft_item - can only be used in crafting recipes. They can be dropped but can not be placed into the world.
+node -
+tool -
+none -  Reserved for the hand (empty item) and unknown items.
+mob -
+
+Name
+The name of this item. Leave blank if defining the hand.
+***** TODO: Need to include explanation for when ':' is used at the beginning of the name.
+
+
+
+-- **************************************
+-- Item Definition
+-- Every item can set these parameters
+-- **************************************
+
+Description = ""
+-- The description shown in tooltips or when pointing to item objects
+
+Inventory_Image = ""
+-- Mandatory for tools and craft_items.
+Note: Setting this parameter can alter how the item looks in the inventory screen - JDC
+However, I think that the inventory mod is at fault.
+
+Wield_Image = ""
+--The texture to display in place of the hand texture when the node is wielded.
+--If undefined (nil), the inventory image will be used.
+
+Wield_Scale = {x=1,y=1,z=1}
+
+Stack_Max = 99
+-- Maximum number of items in a stack. Defaults to 99 for nodes and craftitems and is forced to 1 for tools.
+
+Range = 4.0
+-- The distance that this item can be used when held in the hand
+
+Liquids_Pointable = false
+-- Set to true if you want the item to also point to liquids. Defaults to false. The bucket mod sets this to true.
+
+-- tool_digging_properties is deprecated. Use tool_capabilities.
+-- Useful not only for tools but for for other items. Like when held in hand and digging with the item.
+The code for this is a nightmare. I'll list what I see from /mods/default/init.lua
+Read lua_api.txt section 'Groups' for more information
+Legacy:
+dt_weight
+dt_crackiness
+dt_crumblimess
+dt_cuttability
+basedurability
+dd_weight
+dd_crackiness
+dd_crumblimess
+dd_cuttability
+
+Tool_Capabilities = {
+    full_punch_interval = 1.0,
+    max_drop_level = 0,
+    -- Defines which groups of nodes and entities they are effective towards
+    groupcaps = {
+        fleshy = {times={[1]=1.0, [2]=2.00, [3]=1.00}, uses=0, leveldiff=0, maxlevel=1},
+        crumbly = ditto,
+        snappy = ditto,
+        oddly_breakable_by_hand = ditto,
+        cracky = ditto,
+        choppy = ditto,
+        explody = ditto,
+    }
+    -- List of damage for groups of entities
+    damage_groups = {fleshy=2}
+}
+
+Groups = {}
+-- The groups that this item is a member of and its settings within those groups
+-- The rating of a group can have various meanings such as, digging speed, damage or healing value
+
+Node_Placement_Prediction = ""
+If nil and item is node, prediction is made automatically
+If nil and item is not a node, no prediction is made
+If "" and item is anything, no prediction is made
+Otherwise should be name of node which the client immediately places
+on ground when the player places the item. Server will always update
+actual result to client in a soon.
+
+Usable = false
+
+
+
+
+-- **************************************
+-- Node Definition
+-- Only nodes use these
+-- The MT code has these scattered in various places.
+-- Because of that, I might be missing some simply because I don't know about them.
+-- **************************************
+
+Normal
+Airlike
+Liquid
+FlowingLiquid
+Glasslike
+Allfaces
+Allfaces_Optional
+Torchlike
+Signlike
+Plantlike
+Fencelike
+Raillike
+Nodebox
+Glasslike_Framed
+Glasslike_Framed_Optional
+Firelike
+Mesh
+
+Drawtype = ""
+
+Visual_Scale = 1.0
+
+Tiles = {""}
+
+Special_Tiles
+
+alpha
+--Alpha value (transparency) of the node, with 255 being fully opaque and 0 being fully transparent.
+--Values in-between specify partial transparency. This only has an effect on liquid nodes.
+
+post_effect_color = {a=0, r=0, g=0, b=0}
+--Whenever a player is "inside" the node, the screen is tinted using this color.
+--It is specified as a table with fields 'r', 'g', 'b', and 'a', which represent the Red, Green, and Blue components,
+-- and the effect transparency (Alpha). For example: { r=255, g=0, b=0, a=128 }.
+
+NodeBoxType = ""
+-- PICK ONE AND FILL IN THE DATA:
+Regular     - A normal cube; the default in most things
+    type = "regular"
+Fixed       - A fixed box (facedir param2 is used, if applicable)
+    type = "fixed",
+    fixed = box OR {box1, box2, ...}
+			fixed = {
+				{1/2, -1/2, -1/2, 1/2, 1/2, 1/2},
+				{-1/2, 1/2, -1/2, 1/2, 1/2, 1/2},
+				{-1/2, -1/2, 1/2, 1/2, 1/2, 1/2},
+				{-1/2, -1/2, -1/2, -1/2, 1/2, 1/2},
+				{-1/2, -1/2, -1/2, 1/2, -1/2, 1/2},
+				{-1/2, -1/2, -1/2, 1/2, 1/2, -1/2}
+			}
+WallMounted - A box like the selection box for torches. wallmounted param2 is used, if applicable
+    type = "wallmounted",
+    wall_top = box,
+    wall_bottom = box,
+    wall_side = box
+Leveled     - the same as "fixed", but y2 will be automatically set to level from param2
+Connected   - A node that has optional boxes depending on neighboring nodes.
+                Also requires connects_to key in the node definition so the engine knows what
+                blocks the node is connectable to.
+    type = "connected",
+    fixed = box OR {box1, box2, ...},
+    connect_top = box OR {box1, box2, ...}
+    connect_bottom = box OR {box1, box2, ...}
+    connect_front = box OR {box1, box2, ...}
+    connect_left = box OR {box1, box2, ...}
+    connect_back = box OR {box1, box2, ...}
+    connect_right = box OR {box1, box2, ...}
+
+Node_Box = {"Groups"}
+
+Connects_To
+Used for nodebox nodes with the type == "connected"
+Specifies to what neighboring nodes connections will be drawn
+* e.g. `{"group:fence", "default:wood"}` or `"default:stone"`
+
+connect_sides = { "top", "bottom", "front", "left", "back", "right" }
+Tells connected nodebox nodes to connect only to these sides of this node.
+
+mesh = "model"
+
+Paramtype = "Paramtype"
+--— Specifies what the node's param1 should hold.
+Possible values are:
+None — The engine does not use the param1 field, and it is free to be used for other purposes.
+Light — The value stored in param1 is the light level with and without sun in its upper and lower 4 bits respectively.
+
+Paramtype2 = "Paramtype2"
+--Specifies what the node's param2 should hold.
+Possible values are:
+None
+Full
+FlowingLiquid
+FaceDir— param2 field contains the node's facing direction. Required to be able to orient nodes depending on the direction the player is facing. minetest.dir_to_facedir(dir).
+WallMounted - param2 field contains the wall to which this node is "mounted". See minetest.dir_to_wallmounted(dir).
+Leveled
+DegRotate
+
+The following are boolean parameters. Set to either true or false.
+is_ground_content       --If true, caves will carve through this
+sunlight_propagates     --If true, sunlight will go infinitely through this
+walkable                --If true, objects collide with node
+pointable               --If true, can be pointed at
+diggable                --If false, can never be dug
+climbable               --If true, can be climbed on (ladder)
+buildable_to            --If true, placed nodes can replace this node
+floodable               --If true, liquids flow into and replace this node
+Legacy_Facedir_Simple   -- Support maps made in and before January 2012
+Legacy_Wallmounted      -- Support maps made in and before January 2012
+use_texture_alpha       --Set this to true for the texture's alpha channel to be used. Used in builtin/game/features.lua
+liquid_renewable        --If true, when placing two or more sources so that there is air between them, a new liquid source will be created.
+rightclickable
+Air_Equivalent          -- Not used for anything other than air. IOW, it isn't explicitly set false anywhere
+
+liquid_alternative_flowing = ""     --Flowing version of source liquid
+liquid_alternative_source = ""      --Source version of flowing liquid
+liquid_viscosity = 0                --Higher viscosity means slower flow (max. 7)
+Drowning = 0                        --Player will take this amount of damage if no bubbles are left
+light_source = 0                    --Amount of light emitted by node, where 0 is no light, and 14 is sunlight-like light.
+damage_per_second = 0               --If player is inside node, this damage is caused. This is used for example, by lava.
+liquid_range = 8                    -- number of flowing nodes around source (max. 8)
+drop                                --alternatively drop = { max_items = ..., items = { ... } }
+
+LiquidType = "Liquid_Type"
+Can be one of the following:
+None
+Flowing
+Source
+
+
+Selection_Box = {""}
+		selection_box = {
+			type = "fixed",
+			fixed = {-1/2, -1/2, -1/2, 1/2, 1/2, 1/2}
+		}
+
+
+leveled = 0
+--Block contains level in param2. Value is default level, used for snow.
+--Don't forget to use "leveled" type nodebox.
+
+collision_box
+
+
+
+-- **************************************
+-- Recipes - Edit as required
+-- **************************************
+-- Recipe Types:
+-- Shaped
+-- Shapeless
+-- toolrepair - Special. Use this one time as this seems to affect every tool in the game.
+-- cooking
+-- fuel
+
+Number_Recipes = 1
+-- Number of recipes to register
+-- For tools and craftitems, if this is ever set to zero then we have a problem.
+
+Quantity[1] = 0,
+-- If Quantity = 0 then this item does not have a recipe to make this item
+
+-- Shaped example
+Formula[1] = {
+    {'','','steel_ingot'},
+    {'','steel_ingot',''},
+    {'steel_ingot','',''},
+},
+
+-- Shapeless example
+-- Also shows how to reference an item from a mod
+--Formula = {{"default:steel_ingot" "default:steel_ingot", "default:steel_ingot"}}
+
+Replacements[1] = ""
+-- Replacements change the way item stacks in the crafting grid are decremented when crafting.
+-- Ordinarily, the crafting manager reduces the count of each item stack by one.
+-- But with replacements, you can tell it to instead replace particular items with other items.
+-- If that sounded too abstract, consider the following case.
+-- Say you want to create a crafting recipe where a lump of clay and a water bucket result in
+-- a “wet lump of clay”. However, this would consume the bucket too! With replacements you can
+-- tell the crafting manager to replace it with an empty bucket.
+--  Replacements are allowed for shaped and shapeless recipes.
+
+bool Shapeless
+-- Recipes are one of: shaped or shapeless
+-- You can (but don't have to) add type=“shaped” to the definition table.
+-- Ignored if Quantity = 0
+
+
+
+
+-- **************************************
+--
+-- **************************************
+
+Cooking_Output = ""
+-- What you get after cooking this item
+-- Ignored if cooking_output = 0
+
+Cook_Time = 0
+-- How long you need to cook this item to get its output
+-- Non-zero if the item can be cooked.
+
+Burn_Time = 0
+-- Non-zero if this item can be used as fuel
+
+Additional_Wear = 0
+-- Used for tool repair but I'm not sure how
+-- Non-zero if _____?
+-- Put two damaged tools of the same type into the crafting grid,
+-- get one with their remaining uses combined. The default mod defines this recipe,
+-- but if you want to you can override it in another mod.
+-- additional_wear is a value between -1.0 and 1.0 which is a constant that is added
+-- to the wear of the resulting tool. 1 represents the full bar.
+-- This seems to be global value for all tools in a world - JDC
+
+
+
+
+-- **************************************
+-- SOUNDS - Simple Sound Spec
+-- **************************************
+ Only Ogg Vorbis files are supported.
+ All sound files must end with '.ogg'
+ For positional playing of sounds, only single-channel (mono) files are
+ supported. Otherwise OpenAL will play them non-positionally.
+
+ Sounds are referred to by their name with a dot, a single digit and the
+ file extension stripped out. When a sound is played, the actual sound file
+ is chosen randomly from the matching sounds.
+
+ When playing the sound `foosound`, the sound is chosen randomly
+ from the available ones of the following files:
+
+ `foosound.ogg`
+ `foosound.0.ogg`
+ `foosound.1.ogg`
+ (...)
+ `foosound.9.ogg`
+
+### `SimpleSoundSpec`
+* e.g. `""`
+* e.g. `"default_place_node"`
+* e.g. `{}`
+* e.g. `{name="default_place_node"}`
+* e.g. `{name="default_place_node", gain=1.0}`
+
+
+-- P/O Item Definition
+Sound_Place
+Sound_Place_Gain
+
+-- P/O Item Definition
+Sound_Place_Failed
+Sound_Place__Failed_Gain
+
+-- P/O Node Definition
+Sound_Footstep
+Sound_footstep_Gain
+
+-- P/O Node Definition
+Sound_Dig
+Sound_Dig_Gain
+
+-- P/O Node Definition
+Sound_Dug
+Sound_Dug_Gain
+
+--Tools only
+Sound_Breaks
+
+
+
+
+-- **************************************
+-- CALLBACKS for item definitions
+-- Uncomment and insert your code for each one that you
+-- want to define a non-default action.
+-- **************************************
+
+On_Drop             -- Defaults to minetest.item_drop. Except for Item_Type = none. Then it defaults to nil.
+On_Place            -- Defaults to minetest.item_place
+On_Use              -- Defaults to nil
+On_Secondary_Use    -- Same as On_Place but called when poointing at nothing.
+
+
+
+
+-- **************************************
+-- CALLBACKS for node definitions
+-- Uncomment and insert your code for each one that you
+-- want to define a non-default action.
+-- **************************************
+
+after_use
+on_construct
+on_destruct
+after_destruct
+after_place_node
+after_dig_node
+can_dig
+on_punch
+on_rightclick
+on_dig
+on_timer
+on_receive_fields
+allow_metadata_inventory_move
+allow_metadata_inventory_put
+allow_metadata_inventory_take
+on_metadata_inventory_move
+on_metadata_inventory_offer
+on_metadata_inventory_put
+on_metadata_inventory_take
+on_blast
+
+-- Callbacks that I can't find references to. Are these obsolete?
+on_craft
+on_craft_predict
+
+
+
+-- Need the ability to select one of possibly many different
+-- functions that perform the same task.
+-- Example: Mobs might behave differently and require different functions
+-- Maybe label these functions: on_place1, on_place2, on_destruct1, on_destruct2, etc
+
+Depends_On = ""
+-- This was added by me - JDC
+
