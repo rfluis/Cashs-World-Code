@@ -1,0 +1,8 @@
+minetest.register_alias("custom:flower_viola","flowers:viola")
+minetest.register_alias("custom:flower_waterlily","flowers:waterlily")
+minetest.register_alias("custom:mushroom_red","flowers:mushroom_red")
+minetest.register_alias("custom:flower_dandelion_white","flowers:dandelion_white")
+minetest.register_alias("custom:flower_geranium","flowers:geranium")
+minetest.register_alias("custom:flower_dandelion_yellow","flowers:dandelion_yellow")
+minetest.register_alias("custom:flower_tulip","flowers:tulip")
+minetest.register_alias("custom:flower_rose","flowers:rose")
